@@ -1,0 +1,16 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const app = express();
+app.disable('x-powered-by');
+app.use(cors({ origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : false }));
+app.use(express.json({ limit: '20kb' }));
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html')));
+app.use(notFound);
+app.use(errorHandler);
+module.exports = app;
