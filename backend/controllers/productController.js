@@ -21,8 +21,63 @@ function validId(req, res) {
   return true;
 }
 exports.list = asyncHandler(async (req, res) => {
-  const products = await Product.find().sort({ createdAt: -1 }).limit(200).lean();
-  res.json(products);
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 10);
+  const { name, category } = req.query;
+
+  // Validar paginación
+  if (
+    !Number.isSafeInteger(page) ||
+    page < 1 ||
+    !Number.isSafeInteger(limit) ||
+    limit < 1 ||
+    limit > 100
+  ) {
+    return res.status(400).json({
+      message: 'Page debe ser mayor a 0 y limit debe estar entre 1 y 100.'
+    });
+  }
+
+  // Validar filtros
+  if (
+    (name !== undefined &&
+      (typeof name !== 'string' || name.length > 100)) ||
+    (category !== undefined &&
+      (typeof category !== 'string' || category.length > 60))
+  ) {
+    return res.status(400).json({
+      message: 'Filtros de nombre o categoría inválidos.'
+    });
+  }
+
+  const filters = {};
+
+  if (name?.trim()) {
+    filters.name = {
+      $regex: name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      $options: 'i'
+    };
+  }
+
+  if (category?.trim()) {
+    filters.category = category.trim();
+  }
+
+  const total = await Product.countDocuments(filters);
+
+  const products = await Product.find(filters)
+    .sort({ createdAt: -1, _id: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean();
+
+  res.json({
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+    products
+  });
 });
 exports.get = asyncHandler(async (req, res) => {
   if (!validId(req, res)) return;

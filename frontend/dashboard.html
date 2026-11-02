@@ -1,3 +1,187 @@
+
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Productos | Inventario Fácil</title><link rel="stylesheet" href="/styles.css"></head>
-<body><header class="topbar"><div class="brand"><span class="brand-icon">▣</span> Inventario Fácil</div><div class="topbar-actions"><span id="welcome"></span><button id="logout" class="secondary small">Cerrar sesión</button></div></header><main class="container"><section class="heading"><div><p class="eyebrow">PANEL DE CONTROL</p><h1>Gestión de productos</h1><p class="muted">Consulta, crea, edita y elimina productos de forma sencilla.</p></div><button id="show-create">+ Nuevo producto</button></section><div class="stats"><div class="stat"><span>Total de productos</span><strong id="count">—</strong></div><div class="stat"><span>Valor del inventario</span><strong id="total">—</strong></div></div><section class="panel"><div class="panel-header"><h2>Inventario</h2><input id="search" type="search" aria-label="Buscar productos" placeholder="Buscar por nombre o categoría..."></div><p id="message" class="feedback" role="status" aria-live="polite"></p><div class="table-scroll"><table><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Existencias</th><th>Acciones</th></tr></thead><tbody id="products-body"></tbody></table></div><p class="muted empty" id="empty" hidden>No hay productos para mostrar.</p></section></main><dialog id="product-dialog"><form id="product-form"><h2 id="dialog-title">Nuevo producto</h2><label for="name">Nombre</label><input id="name" maxlength="100" required><label for="description">Descripción</label><textarea id="description" maxlength="500" rows="3"></textarea><label for="category">Categoría</label><input id="category" maxlength="60" value="General"><div class="form-grid"><div><label for="price">Precio (MXN)</label><input id="price" type="number" min="0" step="0.01" required></div><div><label for="stock">Existencias</label><input id="stock" type="number" min="0" step="1" required></div></div><p class="feedback" id="form-message" role="status" aria-live="polite"></p><div class="dialog-actions"><button type="button" id="cancel" class="secondary">Cancelar</button><button type="submit" id="save">Guardar</button></div></form></dialog><script src="/app.js" defer></script></body></html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Productos | Inventario Fácil</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">▣</span>
+      Inventario Fácil
+    </div>
+
+    <div class="topbar-actions">
+      <span id="welcome"></span>
+      <button id="logout" class="secondary small">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="heading">
+      <div>
+        <p class="eyebrow">PANEL DE CONTROL</p>
+        <h1>Gestión de productos</h1>
+        <p class="muted">
+          Consulta, crea, edita y elimina productos de forma sencilla.
+        </p>
+      </div>
+
+      <button id="show-create">
+        + Nuevo producto
+      </button>
+    </section>
+
+    <!-- Estadísticas del inventario -->
+    <div class="stats">
+
+      <div class="stat">
+        <span>Total de productos</span>
+        <strong id="count">—</strong>
+      </div>
+
+      <div class="stat">
+        <span>Valor del inventario (MXN)</span>
+        <strong id="total">—</strong>
+      </div>
+
+      <div class="stat">
+        <span>Valor del inventario (USD)</span>
+        <strong id="total-usd">—</strong>
+        <small id="exchange-rate">
+          Consultando tipo de cambio...
+        </small>
+      </div>
+
+    </div>
+
+    <!-- Tabla de productos -->
+    <section class="panel">
+
+      <div class="panel-header">
+        <h2>Inventario</h2>
+
+        <input
+          id="search"
+          type="search"
+          aria-label="Buscar productos"
+          placeholder="Buscar por nombre o categoría..."
+        >
+      </div>
+
+      <p
+        id="message"
+        class="feedback"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Existencias</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody id="products-body"></tbody>
+        </table>
+      </div>
+
+      <p class="muted empty" id="empty" hidden>
+        No hay productos para mostrar.
+      </p>
+
+    </section>
+
+  </main>
+
+  <!-- Formulario para crear y editar productos -->
+  <dialog id="product-dialog">
+    <form id="product-form">
+
+      <h2 id="dialog-title">Nuevo producto</h2>
+
+      <label for="name">Nombre</label>
+      <input id="name" maxlength="100" required>
+
+      <label for="description">Descripción</label>
+      <textarea
+        id="description"
+        maxlength="500"
+        rows="3"
+      ></textarea>
+
+      <label for="category">Categoría</label>
+      <input
+        id="category"
+        maxlength="60"
+        value="General"
+      >
+
+      <div class="form-grid">
+
+        <div>
+          <label for="price">Precio (MXN)</label>
+          <input
+            id="price"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+          >
+        </div>
+
+        <div>
+          <label for="stock">Existencias</label>
+          <input
+            id="stock"
+            type="number"
+            min="0"
+            step="1"
+            required
+          >
+        </div>
+
+      </div>
+
+      <p
+        class="feedback"
+        id="form-message"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+      <div class="dialog-actions">
+        <button
+          type="button"
+          id="cancel"
+          class="secondary"
+        >
+          Cancelar
+        </button>
+
+        <button type="submit" id="save">
+          Guardar
+        </button>
+      </div>
+
+    </form>
+  </dialog>
+
+  <script src="/app.js" defer></script>
+
+</body>
+</html>
